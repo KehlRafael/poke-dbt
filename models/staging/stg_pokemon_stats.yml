@@ -5,20 +5,25 @@ models:
     description: Long-format base stats, one row per (pokemon_id, stat_id). Pivoted downstream in intermediate.
     columns:
       - name: pokemon_id
+        description: Foreign key to stg_pokemon.pokemon_id.
         data_tests:
           - not_null
           - relationships:
               to: ref('stg_pokemon')
               field: pokemon_id
       - name: stat_id
+        description: Foreign key to stg_stats.stat_id.
         data_tests:
           - not_null
           - relationships:
               to: ref('stg_stats')
               field: stat_id
       - name: base_stat
+        description: Base value for this stat.
         data_tests:
           - not_null
+      - name: effort_value
+        description: Effort Value (EV) yield awarded for defeating this Pokémon.
     data_tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:

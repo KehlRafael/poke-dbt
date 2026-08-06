@@ -8,9 +8,30 @@ models:
       pivot_long_to_wide macro's Jinja loop.
     columns:
       - name: pokemon_id
+        description: Foreign key to stg_pokemon.pokemon_id; one row per Pokémon.
         data_tests:
           - unique
           - not_null
       - name: hp
+        description: Base HP stat.
         data_tests:
           - not_null
+      - name: attack
+        description: Base Attack stat.
+      - name: defense
+        description: Base Defense stat.
+      - name: special_attack
+        description: Base Special Attack stat.
+      - name: special_defense
+        description: Base Special Defense stat.
+      - name: speed
+        description: Base Speed stat.
+      - name: accuracy
+        description: Base Accuracy stat - battle-only, not one of the six core stats used in stat_total.
+      - name: evasion
+        description: Base Evasion stat - battle-only, not one of the six core stats used in stat_total.
+      - name: special
+        description: >
+          Legacy Generation I "Special" stat, later split into special_attack and
+          special_defense in Generation II onward - kept here since it's part of
+          stg_stats, not used downstream.

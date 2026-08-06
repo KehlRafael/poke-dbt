@@ -5,6 +5,9 @@ models:
     description: Lookup of base-stat names (hp, attack, defense, special-attack, special-defense, speed).
     columns:
       - name: stat_id
+        description: Primary key.
         data_tests:
           - unique
           - not_null
+      - name: stat_name
+        description: Name slug of the stat (e.g. 'hp', 'attack', 'special-attack').

@@ -5,12 +5,26 @@ models:
     description: One row per Pokémon form/variant (the leaf entity everything else attaches to).
     columns:
       - name: pokemon_id
+        description: Primary key.
         data_tests:
           - unique
           - not_null
+      - name: pokemon_name
+        description: Name slug for this Pokémon form/variant (e.g. 'bulbasaur', 'venusaur-mega').
       - name: species_id
+        description: Foreign key to stg_pokemon_species.species_id.
         data_tests:
           - not_null
           - relationships:
               to: ref('stg_pokemon_species')
               field: species_id
+      - name: height_decimetres
+        description: Height, in decimetres.
+      - name: weight_hectograms
+        description: Weight, in hectograms.
+      - name: base_experience
+        description: Base experience yield when this Pokémon is defeated.
+      - name: national_order
+        description: Ordering used for sorting Pokémon in a Pokédex listing.
+      - name: is_default_form
+        description: Whether this is the default form for its species.

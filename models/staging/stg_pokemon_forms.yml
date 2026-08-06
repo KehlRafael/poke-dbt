@@ -5,12 +5,22 @@ models:
     description: Cosmetic/battle forms (mega, gmax, regional, etc.), many-to-one with stg_pokemon.
     columns:
       - name: form_id
+        description: Primary key.
         data_tests:
           - unique
           - not_null
+      - name: form_identifier
+        description: Short form/category suffix (e.g. 'mega', 'a', 'eternamax'); blank for a Pokémon's plain default form.
       - name: pokemon_id
+        description: Foreign key to stg_pokemon.pokemon_id. Multiple cosmetic-only forms (e.g. Unown, Vivillon) can share one pokemon_id.
         data_tests:
           - not_null
           - relationships:
               to: ref('stg_pokemon')
               field: pokemon_id
+      - name: is_default_form
+        description: Whether this is the default form row for its pokemon_id.
+      - name: is_battle_only_form
+        description: Whether the form only exists in battle and can't be kept outside of it.
+      - name: is_mega_form
+        description: Whether this is a Mega Evolution form.

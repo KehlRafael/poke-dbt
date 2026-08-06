@@ -5,6 +5,11 @@ models:
     description: Lookup of all Pokémon types.
     columns:
       - name: type_id
+        description: Primary key.
         data_tests:
           - unique
           - not_null
+      - name: type_name
+        description: Name slug of the type (e.g. 'fire', 'water').
+      - name: generation_id
+        description: Generation this type was introduced in.

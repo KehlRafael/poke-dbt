@@ -5,6 +5,13 @@ models:
     description: Lookup of Pokémon abilities.
     columns:
       - name: ability_id
+        description: Primary key.
         data_tests:
           - unique
           - not_null
+      - name: ability_name
+        description: Name slug of the ability (e.g. 'overgrow').
+      - name: generation_id
+        description: Generation this ability was introduced in.
+      - name: is_main_series
+        description: Whether the ability appears in the main series games, as opposed to spin-offs.

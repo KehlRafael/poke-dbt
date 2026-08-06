@@ -1,0 +1,72 @@
+version: 2
+
+models:
+  - name: dim_pokemon
+    description: >
+      One row per Pokémon form, denormalized with species metadata, primary/secondary
+      type, abilities, wide base stats, and a derived stat_total / stat_tier.
+    columns:
+      - name: pokemon_id
+        description: Primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: pokemon_name
+        description: Name slug for this Pokémon form/variant (e.g. 'bulbasaur', 'venusaur-mega').
+      - name: is_default_form
+        description: Whether this is the default form for its species.
+      - name: forms_list
+        description: Comma-separated list of form/variant names for this Pokémon.
+      - name: species_id
+        description: Foreign key to the species this Pokémon form belongs to.
+      - name: generation_id
+        description: Generation this species was introduced in.
+      - name: is_legendary
+        description: Whether this is a legendary species.
+      - name: is_mythical
+        description: Whether this is a mythical species.
+      - name: is_baby
+        description: Whether this is a baby Pokémon (e.g. Pichu).
+      - name: primary_type
+        description: This Pokémon's primary type (type slot 1).
+        data_tests:
+          - not_null
+      - name: secondary_type
+        description: This Pokémon's secondary type (type slot 2); null if it only has one type.
+      - name: ability_1
+        description: First normal ability (ability slot 1).
+      - name: ability_2
+        description: Second normal ability (ability slot 2); null if this Pokémon only has one normal ability.
+      - name: hidden_ability
+        description: Hidden ability (ability slot 3); null if this Pokémon has no hidden ability.
+      - name: hp
+        description: Base HP stat.
+      - name: attack
+        description: Base Attack stat.
+      - name: defense
+        description: Base Defense stat.
+      - name: special_attack
+        description: Base Special Attack stat.
+      - name: special_defense
+        description: Base Special Defense stat.
+      - name: speed
+        description: Base Speed stat.
+      - name: stat_total
+        description: Sum of the six base stats.
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 100
+              max_value: 800
+              config:
+                severity: warn
+      - name: stat_tier
+        description: S/A/B/C/D bucket derived from stat_total via the stat_tier macro.
+        data_tests:
+          - accepted_values:
+              values:
+                - 'S - Top tier'
+                - 'A - Strong'
+                - 'B - Balanced'
+                - 'C - Below average'
+                - 'D - Weak'

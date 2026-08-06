@@ -5,14 +5,29 @@ models:
     description: One row per species (national dex entry) - generation, evolution chain, legendary flags.
     columns:
       - name: species_id
+        description: Primary key.
         data_tests:
           - unique
           - not_null
+      - name: species_name
+        description: Name slug of the species (e.g. 'bulbasaur').
       - name: generation_id
+        description: Generation this species was introduced in.
         data_tests:
           - not_null
       - name: evolves_from_species_id
+        description: Foreign key to the species this one evolves from; blank if it's the base of its evolution chain.
         data_tests:
           - relationships:
               to: ref('stg_pokemon_species')
               field: species_id
+      - name: capture_rate
+        description: Base catch rate used in the capture formula.
+      - name: base_happiness
+        description: Starting friendship value when caught.
+      - name: is_baby
+        description: Whether this is a baby Pokémon (e.g. Pichu).
+      - name: is_legendary
+        description: Whether this is a legendary species.
+      - name: is_mythical
+        description: Whether this is a mythical species.
