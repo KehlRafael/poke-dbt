@@ -16,7 +16,8 @@ clean-targets:
 models:
   pokedex:
     staging:
-      +materialized: view
+      +materialized: table
+      +schema: stg
     intermediate:
       +materialized: view
     marts:

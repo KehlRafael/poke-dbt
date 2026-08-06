@@ -14,8 +14,8 @@ Usage:
     python scripts/load_raw_data.py --files pokemon.csv stats.csv   # limit to specific files
 
 CSVs are cached in <project_root>/data/. Each one is loaded into
-<project_root>/data/pokedex.duckdb as a table named raw_<file stem>, e.g.
-pokemon.csv -> raw_pokemon.
+<project_root>/data/pokedex.duckdb, schema `raw`, as a table named
+raw_<file stem>, e.g. pokemon.csv -> raw.raw_pokemon.
 """
 
 from __future__ import annotations
@@ -54,10 +54,15 @@ COLUMN_TYPE_OVERRIDES = {
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = PROJECT_ROOT / "data"
 DB_PATH = DATA_DIR / "pokedex.duckdb"
+RAW_SCHEMA = "raw"
 
 
 def raw_table_name(filename: str) -> str:
     return f"raw_{Path(filename).stem}"
+
+
+def qualified_table_name(filename: str) -> str:
+    return f"{RAW_SCHEMA}.{raw_table_name(filename)}"
 
 
 def sha256_of(path: Path) -> str:
@@ -98,15 +103,16 @@ def sync_csv(filename: str, *, force: bool) -> str:
 
 
 def load_table(con: duckdb.DuckDBPyConnection, filename: str) -> int:
-    """Loads DATA_DIR/filename into raw_<name> in the DuckDB file. Returns the row count."""
+    """Loads DATA_DIR/filename into raw.raw_<name> in the DuckDB file. Returns the row count."""
     csv_path = DATA_DIR / filename
-    table = raw_table_name(filename)
+    table = qualified_table_name(filename)
     overrides = COLUMN_TYPE_OVERRIDES.get(filename)
     types_clause = ""
     if overrides:
         pairs = ", ".join(f"'{col}': '{dtype}'" for col, dtype in overrides.items())
         types_clause = f", types={{{pairs}}}"
 
+    con.execute(f"create schema if not exists {RAW_SCHEMA}")
     con.execute(
         f"create or replace table {table} as "
         f"select * from read_csv_auto('{csv_path.as_posix()}'{types_clause})"
@@ -121,17 +127,25 @@ def check(targets: list[str]) -> int:
     table_counts = {}
     if DB_PATH.exists():
         with duckdb.connect(str(DB_PATH), read_only=True) as con:
-            existing = {row[0] for row in con.execute("show tables").fetchall()}
+            existing = {
+                row[0]
+                for row in con.execute(
+                    "select table_name from information_schema.tables where table_schema = ?",
+                    [RAW_SCHEMA],
+                ).fetchall()
+            }
             for filename in targets:
                 table = raw_table_name(filename)
                 if table in existing:
-                    table_counts[table] = con.execute(f"select count(*) from {table}").fetchone()[0]
+                    table_counts[table] = con.execute(
+                        f"select count(*) from {qualified_table_name(filename)}"
+                    ).fetchone()[0]
 
     for filename in targets:
         table = raw_table_name(filename)
         csv_status = "cached" if (DATA_DIR / filename).exists() else "MISSING"
         db_status = f"{table_counts[table]} rows" if table in table_counts else "MISSING"
-        print(f"  {filename:<28} csv: {csv_status:<10} duckdb.{table}: {db_status}")
+        print(f"  {filename:<28} csv: {csv_status:<10} duckdb.{RAW_SCHEMA}.{table}: {db_status}")
 
     missing = [f for f in targets if raw_table_name(f) not in table_counts]
     if missing:
@@ -182,7 +196,7 @@ def main() -> int:
                 continue
 
             row_count = load_table(con, filename)
-            table = raw_table_name(filename)
+            table = qualified_table_name(filename)
             print(f"  {filename:<28} {status:<12} -> {table} ({row_count} rows)")
 
     failures = [f for f, s in results.items() if s.startswith("ERROR")]

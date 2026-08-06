@@ -3,7 +3,7 @@ version: 2
 sources:
   - name: pokeapi
     description: Raw PokeAPI CSV exports, loaded into DuckDB by scripts/load_raw_data.py.
-    schema: main
+    schema: raw
     tables:
       - name: raw_types
         description: Lookup of Pokémon types, as exported by PokeAPI.

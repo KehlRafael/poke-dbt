@@ -4,4 +4,5 @@ pokedex:
     dev:
       type: duckdb
       path: 'data/pokedex.duckdb'
+      schema: pokedex
       threads: 4
