@@ -1,0 +1,22 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+data/*.csv
+data/pokedex.duckdb
+
+# dbt artifacts
+target/
+dbt_packages/
+logs/
+.user.yml
+
+# Local editor/tooling
+.DS_Store
+.claude/settings.local.json
