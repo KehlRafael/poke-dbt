@@ -1,0 +1,12 @@
+{{
+    pivot_long_to_wide(
+        relation=ref('stg_pokemon_stats'),
+        group_by_column='pokemon_id',
+        pivot_id_column='stat_id',
+        value_column='base_stat',
+        lookup_relation=ref('stg_stats'),
+        lookup_id_column='stat_id',
+        lookup_name_column='stat_name',
+        agg='max'
+    )
+}}

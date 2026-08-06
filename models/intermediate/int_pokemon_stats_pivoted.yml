@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: int_pokemon_stats_pivoted
+    description: >
+      Base stats pivoted from long (stg_pokemon_stats) to wide, one column per stat.
+      Column names are generated at compile time from stg_stats via the
+      pivot_long_to_wide macro's Jinja loop.
+    columns:
+      - name: pokemon_id
+        data_tests:
+          - unique
+          - not_null
+      - name: hp
+        data_tests:
+          - not_null
