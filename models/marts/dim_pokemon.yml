@@ -17,8 +17,8 @@ models:
         description: Whether this is the default form for its species.
       - name: forms_list
         description: Comma-separated list of form/variant names for this Pokémon.
-      - name: species_id
-        description: Foreign key to the species this Pokémon form belongs to.
+      - name: national_dex
+        description: National Pokédex number of the species this Pokémon form belongs to.
       - name: generation_id
         description: Generation this species was introduced in.
       - name: is_legendary

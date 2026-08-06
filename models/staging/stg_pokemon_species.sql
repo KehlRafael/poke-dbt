@@ -3,7 +3,7 @@ with source as (
 )
 
 select
-    id                                      as species_id,
+    id                                      as national_dex,
     identifier                              as species_name,
     generation_id,
     evolves_from_species_id,

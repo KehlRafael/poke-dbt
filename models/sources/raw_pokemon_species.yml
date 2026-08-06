@@ -9,7 +9,7 @@ sources:
         description: One row per species, as exported by PokeAPI.
         columns:
           - name: id
-            description: Primary key; referenced elsewhere as species_id.
+            description: Primary key; referenced elsewhere as national_dex.
             data_tests:
               - unique
               - not_null

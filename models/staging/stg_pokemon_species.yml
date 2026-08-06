@@ -4,8 +4,8 @@ models:
   - name: stg_pokemon_species
     description: One row per species (national dex entry) - generation, evolution chain, legendary flags.
     columns:
-      - name: species_id
-        description: Primary key.
+      - name: national_dex
+        description: Primary key; national Pokédex number for this species.
         data_tests:
           - unique
           - not_null
@@ -20,7 +20,7 @@ models:
         data_tests:
           - relationships:
               to: ref('stg_pokemon_species')
-              field: species_id
+              field: national_dex
       - name: capture_rate
         description: Base catch rate used in the capture formula.
       - name: base_happiness

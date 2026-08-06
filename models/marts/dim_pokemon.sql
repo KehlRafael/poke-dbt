@@ -51,7 +51,7 @@ select
     p.pokemon_name,
     p.is_default_form,
     fo.forms_list,
-    s.species_id,
+    s.national_dex,
     s.generation_id,
     s.is_legendary,
     s.is_mythical,
@@ -71,7 +71,7 @@ select
     {{ stat_tier('st.stat_total') }} as stat_tier
 
 from pokemon p
-inner join species s        on p.species_id = s.species_id
+inner join species s        on p.national_dex = s.national_dex
 left join stats_wide sw      on p.pokemon_id = sw.pokemon_id
 left join stat_totals st     on p.pokemon_id = st.pokemon_id
 left join types_agg ty       on p.pokemon_id = ty.pokemon_id

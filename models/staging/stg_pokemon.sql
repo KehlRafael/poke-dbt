@@ -5,7 +5,7 @@ with source as (
 select
     id                                  as pokemon_id,
     identifier                          as pokemon_name,
-    species_id,
+    species_id                          as national_dex,
     height                              as height_decimetres,
     weight                              as weight_hectograms,
     base_experience,

@@ -11,13 +11,13 @@ models:
           - not_null
       - name: pokemon_name
         description: Name slug for this Pokémon form/variant (e.g. 'bulbasaur', 'venusaur-mega').
-      - name: species_id
-        description: Foreign key to stg_pokemon_species.species_id.
+      - name: national_dex
+        description: Foreign key to stg_pokemon_species.national_dex.
         data_tests:
           - not_null
           - relationships:
               to: ref('stg_pokemon_species')
-              field: species_id
+              field: national_dex
       - name: height_decimetres
         description: Height, in decimetres.
       - name: weight_hectograms
