@@ -96,8 +96,10 @@ don't rely on memory of past runs. For each model in scope, check:
 - **Naming and layer conventions**: `stg_` for staging, `int_` for intermediate;
   for marts, `fct_` only for event/process-grain tables with measures, `dim_`
   for entity-grain tables with descriptive attributes (don't default to `fct_`
-  for everything in `models/marts/`). Materialization should match the layer in
-  `dbt_project.yml` (staging/intermediate = view, marts = table).
+  for everything in `models/marts/`). Materialization/schema should match the
+  layer in `dbt_project.yml`: staging = table in `stg`, intermediate = view in
+  `pokedex`, marts = table in `pokedex`. Raw sources live in the `raw` schema
+  (loaded directly by `scripts/load_raw_data.py`, not by dbt).
 - **Sources stay out of `models/staging/`**: if the new model is a source
   declaration, its yml belongs under `models/sources/`, one file per raw table.
 

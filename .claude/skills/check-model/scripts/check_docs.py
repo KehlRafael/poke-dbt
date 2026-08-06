@@ -75,9 +75,11 @@ def load_yaml_entries() -> dict[str, dict]:
 
 
 def actual_columns(con: duckdb.DuckDBPyConnection, table_name: str) -> list[str] | None:
+    # Raw tables live in `raw`, staging in `stg`, intermediate/marts in `pokedex` -
+    # table names are unique across the project, so match on name alone.
     rows = con.execute(
         "select column_name from information_schema.columns "
-        "where table_schema = 'main' and table_name = ? "
+        "where table_name = ? "
         "order by ordinal_position",
         [table_name],
     ).fetchall()
