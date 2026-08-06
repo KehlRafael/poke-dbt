@@ -16,8 +16,9 @@ models:
         data_tests:
           - not_null
           - relationships:
-              to: ref('stg_pokemon_species')
-              field: national_dex
+              arguments:
+                to: ref('stg_pokemon_species')
+                field: national_dex
       - name: height_decimetres
         description: Height, in decimetres.
       - name: weight_hectograms

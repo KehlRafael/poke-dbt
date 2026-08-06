@@ -9,21 +9,24 @@ models:
         data_tests:
           - not_null
           - relationships:
-              to: ref('stg_pokemon')
-              field: pokemon_id
+              arguments:
+                to: ref('stg_pokemon')
+                field: pokemon_id
       - name: ability_id
         description: Foreign key to stg_abilities.ability_id.
         data_tests:
           - not_null
           - relationships:
-              to: ref('stg_abilities')
-              field: ability_id
+              arguments:
+                to: ref('stg_abilities')
+                field: ability_id
       - name: ability_slot
         description: Ability slot - 1 and 2 are normal abilities, 3 is the hidden ability.
       - name: is_hidden_ability
         description: Whether this is a hidden ability.
     data_tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - pokemon_id
-            - ability_slot
+          arguments:
+            combination_of_columns:
+              - pokemon_id
+              - ability_slot

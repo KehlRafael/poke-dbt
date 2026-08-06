@@ -24,6 +24,7 @@ models:
           - not_null
     data_tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - pokemon_id
-            - stat
+          arguments:
+            combination_of_columns:
+              - pokemon_id
+              - stat
