@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: stg_pokemon_forms
+    description: Cosmetic/battle forms (mega, gmax, regional, etc.), many-to-one with stg_pokemon.
+    columns:
+      - name: form_id
+        data_tests:
+          - unique
+          - not_null
+      - name: pokemon_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_pokemon')
+              field: pokemon_id

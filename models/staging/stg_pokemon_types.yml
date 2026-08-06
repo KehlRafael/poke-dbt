@@ -1,0 +1,27 @@
+version: 2
+
+models:
+  - name: stg_pokemon_types
+    description: Many-to-many bridge, one row per (pokemon_id, slot) - slot 1 is primary type, slot 2 secondary.
+    columns:
+      - name: pokemon_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_pokemon')
+              field: pokemon_id
+      - name: type_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_types')
+              field: type_id
+      - name: type_slot
+        data_tests:
+          - accepted_values:
+              values: [1, 2]
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - pokemon_id
+            - type_slot

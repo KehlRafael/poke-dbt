@@ -1,0 +1,10 @@
+version: 2
+
+models:
+  - name: stg_abilities
+    description: Lookup of Pokémon abilities.
+    columns:
+      - name: ability_id
+        data_tests:
+          - unique
+          - not_null

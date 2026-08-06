@@ -1,0 +1,18 @@
+version: 2
+
+models:
+  - name: stg_pokemon_species
+    description: One row per species (national dex entry) - generation, evolution chain, legendary flags.
+    columns:
+      - name: species_id
+        data_tests:
+          - unique
+          - not_null
+      - name: generation_id
+        data_tests:
+          - not_null
+      - name: evolves_from_species_id
+        data_tests:
+          - relationships:
+              to: ref('stg_pokemon_species')
+              field: species_id

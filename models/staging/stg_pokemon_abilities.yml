@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: stg_pokemon_abilities
+    description: Many-to-many bridge, one row per (pokemon_id, slot), flagging hidden abilities.
+    columns:
+      - name: pokemon_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_pokemon')
+              field: pokemon_id
+      - name: ability_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg_abilities')
+              field: ability_id
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - pokemon_id
+            - ability_slot

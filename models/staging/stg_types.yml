@@ -1,0 +1,10 @@
+version: 2
+
+models:
+  - name: stg_types
+    description: Lookup of all Pokémon types.
+    columns:
+      - name: type_id
+        data_tests:
+          - unique
+          - not_null

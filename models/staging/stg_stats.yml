@@ -1,0 +1,10 @@
+version: 2
+
+models:
+  - name: stg_stats
+    description: Lookup of base-stat names (hp, attack, defense, special-attack, special-defense, speed).
+    columns:
+      - name: stat_id
+        data_tests:
+          - unique
+          - not_null
