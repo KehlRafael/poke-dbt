@@ -1,4 +1,4 @@
-# CLAUDE.md — pokedex dbt project
+# CLAUDE.md — poke-dbt project
 
 Project guidelines for working in this repo. It's a general-purpose dbt reference
 project meant to demonstrate core dbt concepts — sources, staging, joins, Jinja macros,
@@ -25,7 +25,8 @@ dataset. This is a deliberate design constraint to preserve:
 ## The 9 raw tables in use (out of ~50 available in the PokeAPI dump)
 
 `scripts/load_raw_data.py` downloads these as CSVs (cached in `data/`) and loads
-each into `data/pokedex.duckdb` as a `raw_*` table, declared as a dbt source.
+each into `data/pokedex.duckdb`'s `raw` schema as a `raw_*` table, declared as
+a dbt source.
 
 | CSV | Raw table | Grain | Notes |
 |---|---|---|---|
@@ -43,14 +44,28 @@ Not included: `pokemon_moves.csv` (large move-list table) and
 `egg_groups`/`pokemon_egg_groups` (a second many:many bridge) — both are valid
 candidates for extending this project, but are out of scope today.
 
+## Schema layout
+
+Each layer lives in its own DuckDB schema, within the single `data/pokedex.duckdb` file:
+
+| Schema | Layer | Materialization |
+|---|---|---|
+| `raw` | raw source tables | tables, loaded directly by `scripts/load_raw_data.py` (not dbt) |
+| `stg` | staging | tables |
+| `pokedex` | intermediate, marts | intermediate = views, marts = tables |
+
+`macros/generate_schema_name.sql` overrides dbt's default schema-naming macro
+so a model's `+schema: stg` config produces a literal `stg` schema instead of
+dbt's default `<target_schema>_stg` concatenation.
+
 ## Project structure
 
 ```
-pokedex_dbt/
-├── scripts/load_raw_data.py       # downloads the 9 CSVs from PokeAPI's repo into data/, loads them into data/pokedex.duckdb as raw_* tables
+poke-dbt/
+├── scripts/load_raw_data.py       # downloads the 9 CSVs from PokeAPI's repo into data/, loads them into the raw schema of data/pokedex.duckdb
 ├── data/
 │   ├── *.csv                      # cached raw CSVs (gitignored)
-│   └── pokedex.duckdb             # raw_* source tables + all dbt-built models (gitignored)
+│   └── pokedex.duckdb             # raw/stg/pokedex schemas: raw_* tables + all dbt-built models (gitignored)
 ├── models/
 │   ├── sources/                   # one raw_<table>.yml per raw source table - dbt source declarations only, no models
 │   ├── staging/                   # 9 models, 1:1 with each raw_* source table, light renaming/casting
@@ -63,7 +78,8 @@ pokedex_dbt/
 │       └── dim_pokemon.yml
 ├── macros/
 │   ├── pivot_long_to_wide.sql     # generic long->wide pivot; resolves pivot columns at COMPILE time via run_query
-│   └── stat_tier.sql              # parameterized S/A/B/C/D bucketing on stat_total
+│   ├── stat_tier.sql              # parameterized S/A/B/C/D bucketing on stat_total
+│   └── generate_schema_name.sql   # makes custom +schema config (stg) literal, not target_schema-prefixed
 ├── dbt_project.yml
 ├── packages.yml                   # dbt_utils (used for unique_combination_of_columns, accepted_range)
 ├── profiles.yml                   # DuckDB target, kept in the project - run dbt with --profiles-dir . / DBT_PROFILES_DIR=.
@@ -79,6 +95,10 @@ pokedex_dbt/
 - **Sources live in `models/sources/`, separate from `models/staging/`** — sources
   are declarations of external raw tables, not staging models, and shouldn't be
   mixed into the same directory.
+- **Each layer has its own schema** (see Schema layout above): `raw` for source
+  tables, `stg` for staging, `pokedex` for intermediate/marts. A new staging
+  model doesn't need a `+schema` override - it inherits `stg` from
+  `dbt_project.yml`.
 - **Testing is layered and consistent**: every primary key gets `unique` +
   `not_null`; every foreign key gets `not_null` + `relationships`. These tests are
   applied at the source layer *and* mirrored at the staging layer that consumes
