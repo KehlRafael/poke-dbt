@@ -8,18 +8,20 @@ tables, ready to be declared as dbt sources.
 Source of truth: https://github.com/PokeAPI/pokeapi (data/v2/csv/*.csv)
 
 Usage:
-    python scripts/load_raw_data.py                 # interactive: prompts before overwriting cached CSVs
-    python scripts/load_raw_data.py --yes           # skip prompts, always refresh
-    python scripts/load_raw_data.py --check         # only report status, no download
+    python scripts/load_raw_data.py                 # downloads only CSVs missing from the cache
+    python scripts/load_raw_data.py --yes           # re-downloads and overwrites every target CSV
+    python scripts/load_raw_data.py --check         # only report status, no network calls at all
     python scripts/load_raw_data.py --files pokemon.csv stats.csv   # limit to specific files
 
-CSVs are cached in <project_root>/data/. Each one is loaded into
+CSVs are cached in <project_root>/data/. Once a CSV is cached, it's reused as-is
+on every future run (per PokeAPI's fair use policy - https://pokeapi.co/docs/v2#fairuse
+- "Locally cache resources whenever you request them") and is never re-requested
+from PokeAPI unless --yes is passed. Each cached CSV is loaded into
 <project_root>/data/pokedex.duckdb, schema `raw`, as a table named
 raw_<file stem>, e.g. pokemon.csv -> raw.raw_pokemon.
 """
 
 import argparse
-import hashlib
 import sys
 from pathlib import Path
 from urllib.error import HTTPError, URLError
@@ -63,12 +65,6 @@ def qualified_table_name(filename: str) -> str:
     return f"{RAW_SCHEMA}.{raw_table_name(filename)}"
 
 
-def sha256_of(path: Path) -> str:
-    h = hashlib.sha256()
-    h.update(path.read_bytes())
-    return h.hexdigest()
-
-
 def download(filename: str) -> bytes:
     url = f"{RAW_BASE}/{filename}"
     with urlopen(url, timeout=30) as resp:  # noqa: S310 - fixed trusted host
@@ -76,28 +72,24 @@ def download(filename: str) -> bytes:
 
 
 def sync_csv(filename: str, *, force: bool) -> str:
-    """Downloads filename into DATA_DIR if missing/changed. Returns a status string."""
+    """Ensures filename is present in DATA_DIR, downloading only if missing or forced.
+
+    Never re-requests an already-cached file unless force=True - PokeAPI's fair
+    use policy asks consumers to locally cache resources whenever they're requested.
+    """
     dest = DATA_DIR / filename
     exists = dest.exists()
+    if exists and not force:
+        return "cached"
 
     try:
         remote_bytes = download(filename)
     except (HTTPError, URLError) as exc:
         return f"ERROR ({exc})"
 
-    if exists and not force:
-        if sha256_of(dest) == hashlib.sha256(remote_bytes).hexdigest():
-            return "up to date"
-        answer = input(
-            f"  '{filename}' already exists and differs from the remote copy. "
-            f"Overwrite? [y/N] "
-        ).strip().lower()
-        if answer != "y":
-            return "skipped"
-
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     dest.write_bytes(remote_bytes)
-    return "updated" if exists else "downloaded"
+    return "refreshed" if exists else "downloaded"
 
 
 def load_table(con: duckdb.DuckDBPyConnection, filename: str) -> int:
@@ -158,7 +150,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("Usage:")[0])
     parser.add_argument(
         "--yes", "-y", action="store_true",
-        help="Overwrite cached CSVs without prompting.",
+        help="Re-download and overwrite cached CSVs, even if already present.",
     )
     parser.add_argument(
         "--check", action="store_true",
@@ -189,7 +181,7 @@ def main() -> int:
             status = sync_csv(filename, force=args.yes)
             results[filename] = status
 
-            if status.startswith("ERROR") or status == "skipped":
+            if status.startswith("ERROR"):
                 print(f"  {filename:<28} {status}")
                 continue
 

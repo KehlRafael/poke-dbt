@@ -6,12 +6,28 @@ pipeline: raw source tables → staging → intermediate → marts.
 Requires [uv](https://docs.astral.sh/uv/). Dependencies are declared in
 `pyproject.toml`/`uv.lock` — `uv run` installs them automatically on first use.
 
+## Data source & attribution
+
+Data comes from [PokeAPI](https://pokeapi.co) ([API docs](https://pokeapi.co/docs/v2)) —
+specifically its own [raw CSV export](https://github.com/PokeAPI/pokeapi/tree/master/data/v2/csv)
+(BSD-3-Clause licensed), fetched by `scripts/load_raw_data.py`.
+
+PokeAPI is free to use under its [Fair Use Policy](https://pokeapi.co/docs/v2#fairuse), which asks
+consumers to locally cache resources whenever they're requested, be respectful of other developers
+sharing the API, and report security issues responsibly rather than exploit them. `load_raw_data.py`
+already satisfies the caching requirement: once a CSV is cached in `data/`, it's reused as-is on
+every future run and is never re-requested from PokeAPI unless `--yes` is passed explicitly.
+
+Pokémon and Pokémon character names are trademarks of Nintendo. This project is an unofficial,
+educational use of PokeAPI's data and isn't affiliated with Nintendo, Game Freak, or The Pokémon
+Company.
+
 ## 1. Get the data
 
 ```bash
 uv run python scripts/load_raw_data.py            # first run: downloads all 9 CSVs into data/, loads data/pokedex.duckdb
-uv run python scripts/load_raw_data.py            # re-run any time: only re-materializes changed files
-uv run python scripts/load_raw_data.py --check    # just downloads and report status, no materialization
+uv run python scripts/load_raw_data.py            # re-run any time: reuses cached CSVs, no re-download
+uv run python scripts/load_raw_data.py --check    # report status only - no network calls, no materialization
 ```
 
 This creates `data/pokedex.duckdb` with the raw PokeAPI tables (`raw_pokemon`,
