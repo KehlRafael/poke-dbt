@@ -13,15 +13,17 @@ sources:
             data_tests:
               - not_null
               - relationships:
-                  to: source('pokeapi', 'raw_pokemon')
-                  field: id
+                  arguments:
+                    to: source('pokeapi', 'raw_pokemon')
+                    field: id
           - name: stat_id
             description: Foreign key to raw_stats.id.
             data_tests:
               - not_null
               - relationships:
-                  to: source('pokeapi', 'raw_stats')
-                  field: id
+                  arguments:
+                    to: source('pokeapi', 'raw_stats')
+                    field: id
           - name: base_stat
             description: Base value for this stat.
           - name: effort

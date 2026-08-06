@@ -19,8 +19,9 @@ models:
         description: Foreign key to the species this one evolves from; blank if it's the base of its evolution chain.
         data_tests:
           - relationships:
-              to: ref('stg_pokemon_species')
-              field: national_dex
+              arguments:
+                to: ref('stg_pokemon_species')
+                field: national_dex
       - name: capture_rate
         description: Base catch rate used in the capture formula.
       - name: base_happiness

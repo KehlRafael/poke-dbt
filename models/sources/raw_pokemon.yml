@@ -20,8 +20,9 @@ sources:
             data_tests:
               - not_null
               - relationships:
-                  to: source('pokeapi', 'raw_pokemon_species')
-                  field: id
+                  arguments:
+                    to: source('pokeapi', 'raw_pokemon_species')
+                    field: id
           - name: height
             description: Height, in decimetres.
           - name: weight

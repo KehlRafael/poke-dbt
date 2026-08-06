@@ -22,8 +22,9 @@ sources:
             data_tests:
               - not_null
               - relationships:
-                  to: source('pokeapi', 'raw_pokemon')
-                  field: id
+                  arguments:
+                    to: source('pokeapi', 'raw_pokemon')
+                    field: id
           - name: introduced_in_version_group_id
             description: Version group this form was introduced in.
           - name: is_default

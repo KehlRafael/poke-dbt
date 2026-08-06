@@ -21,8 +21,9 @@ sources:
             description: Foreign key to the species this one evolves from; blank if it's the base of its evolution chain.
             data_tests:
               - relationships:
-                  to: source('pokeapi', 'raw_pokemon_species')
-                  field: id
+                  arguments:
+                    to: source('pokeapi', 'raw_pokemon_species')
+                    field: id
           - name: evolution_chain_id
             description: Groups all species that belong to the same evolution chain.
           - name: color_id

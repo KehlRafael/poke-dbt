@@ -56,17 +56,19 @@ models:
         data_tests:
           - not_null
           - dbt_utils.accepted_range:
-              min_value: 100
-              max_value: 800
+              arguments:
+                min_value: 100
+                max_value: 800
               config:
                 severity: warn
       - name: stat_tier
         description: S/A/B/C/D bucket derived from stat_total via the stat_tier macro.
         data_tests:
           - accepted_values:
-              values:
-                - 'S - Top tier'
-                - 'A - Strong'
-                - 'B - Balanced'
-                - 'C - Below average'
-                - 'D - Weak'
+              arguments:
+                values:
+                  - 'S - Top tier'
+                  - 'A - Strong'
+                  - 'B - Balanced'
+                  - 'C - Below average'
+                  - 'D - Weak'

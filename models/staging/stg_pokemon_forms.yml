@@ -16,8 +16,9 @@ models:
         data_tests:
           - not_null
           - relationships:
-              to: ref('stg_pokemon')
-              field: pokemon_id
+              arguments:
+                to: ref('stg_pokemon')
+                field: pokemon_id
       - name: is_default_form
         description: Whether this is the default form row for its pokemon_id.
       - name: is_battle_only_form

@@ -13,15 +13,17 @@ sources:
             data_tests:
               - not_null
               - relationships:
-                  to: source('pokeapi', 'raw_pokemon')
-                  field: id
+                  arguments:
+                    to: source('pokeapi', 'raw_pokemon')
+                    field: id
           - name: ability_id
             description: Foreign key to raw_abilities.id.
             data_tests:
               - not_null
               - relationships:
-                  to: source('pokeapi', 'raw_abilities')
-                  field: id
+                  arguments:
+                    to: source('pokeapi', 'raw_abilities')
+                    field: id
           - name: is_hidden
             description: Whether this is a hidden ability.
           - name: slot

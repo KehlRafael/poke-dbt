@@ -9,15 +9,17 @@ models:
         data_tests:
           - not_null
           - relationships:
-              to: ref('stg_pokemon')
-              field: pokemon_id
+              arguments:
+                to: ref('stg_pokemon')
+                field: pokemon_id
       - name: stat_id
         description: Foreign key to stg_stats.stat_id.
         data_tests:
           - not_null
           - relationships:
-              to: ref('stg_stats')
-              field: stat_id
+              arguments:
+                to: ref('stg_stats')
+                field: stat_id
       - name: base_stat
         description: Base value for this stat.
         data_tests:
@@ -26,6 +28,7 @@ models:
         description: Effort Value (EV) yield awarded for defeating this Pokémon.
     data_tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - pokemon_id
-            - stat_id
+          arguments:
+            combination_of_columns:
+              - pokemon_id
+              - stat_id
