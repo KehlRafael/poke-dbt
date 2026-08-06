@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: dim_effort_value
+    description: >
+      One row per (Pokémon form, stat), with basic Pokémon identifying info and
+      the Effort Value (EV) yield awarded for defeating it, broken out per stat.
+    columns:
+      - name: pokemon_id
+        description: Foreign key to stg_pokemon.pokemon_id.
+        data_tests:
+          - not_null
+      - name: pokemon_name
+        description: Name slug for this Pokémon form/variant (e.g. 'bulbasaur', 'venusaur-mega').
+      - name: national_dex
+        description: National Pokédex number of the species this Pokémon form belongs to.
+      - name: stat
+        description: Name of the stat this effort value applies to (e.g. 'hp', 'attack'), as sourced from stg_stats.stat_name.
+        data_tests:
+          - not_null
+      - name: effort_value
+        description: Effort Value (EV) yield awarded for defeating this Pokémon, for this stat.
+        data_tests:
+          - not_null
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - pokemon_id
+            - stat

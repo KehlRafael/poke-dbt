@@ -33,9 +33,12 @@ abilities_agg as (
 
 stat_totals as (
     select
-        pokemon_id,
-        (hp + attack + defense + special_attack + special_defense + speed) as stat_total
-    from stats_wide
+        ps.pokemon_id,
+        sum(ps.base_stat) as stat_total
+    from {{ ref('stg_pokemon_stats') }} ps
+    inner join {{ ref('stg_stats') }} sl on ps.stat_id = sl.stat_id
+    where sl.stat_name in ('hp', 'attack', 'defense', 'special-attack', 'special-defense', 'speed')
+    group by ps.pokemon_id
 ),
 
 forms_agg as (
