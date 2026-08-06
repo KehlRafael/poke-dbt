@@ -18,8 +18,6 @@ CSVs are cached in <project_root>/data/. Each one is loaded into
 raw_<file stem>, e.g. pokemon.csv -> raw.raw_pokemon.
 """
 
-from __future__ import annotations
-
 import argparse
 import hashlib
 import sys
