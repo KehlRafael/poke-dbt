@@ -1,4 +1,4 @@
-# pokedex — a dbt project on PokeAPI data
+# poke-dbt — a dbt project on PokeAPI data
 
 Raw relational Pokémon data (all 9 generations) turned into a small, tested dbt
 pipeline: raw source tables → staging → intermediate → marts.
