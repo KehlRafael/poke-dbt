@@ -1,0 +1,26 @@
+version: 2
+
+sources:
+  - name: pokeapi
+    description: Raw PokeAPI CSV exports, loaded into DuckDB by scripts/load_raw_data.py.
+    schema: main
+    tables:
+      - name: raw_pokemon_types
+        description: Many-to-many bridge between Pokémon and types, as exported by PokeAPI.
+        columns:
+          - name: pokemon_id
+            description: Foreign key to raw_pokemon.id.
+            data_tests:
+              - not_null
+              - relationships:
+                  to: source('pokeapi', 'raw_pokemon')
+                  field: id
+          - name: type_id
+            description: Foreign key to raw_types.id.
+            data_tests:
+              - not_null
+              - relationships:
+                  to: source('pokeapi', 'raw_types')
+                  field: id
+          - name: slot
+            description: Type slot - 1 is the primary type, 2 is the secondary type.

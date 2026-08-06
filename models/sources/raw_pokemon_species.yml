@@ -1,0 +1,57 @@
+version: 2
+
+sources:
+  - name: pokeapi
+    description: Raw PokeAPI CSV exports, loaded into DuckDB by scripts/load_raw_data.py.
+    schema: main
+    tables:
+      - name: raw_pokemon_species
+        description: One row per species, as exported by PokeAPI.
+        columns:
+          - name: id
+            description: Primary key; referenced elsewhere as species_id.
+            data_tests:
+              - unique
+              - not_null
+          - name: identifier
+            description: Name slug of the species (e.g. 'bulbasaur').
+          - name: generation_id
+            description: Generation this species was introduced in.
+          - name: evolves_from_species_id
+            description: Foreign key to the species this one evolves from; blank if it's the base of its evolution chain.
+            data_tests:
+              - relationships:
+                  to: source('pokeapi', 'raw_pokemon_species')
+                  field: id
+          - name: evolution_chain_id
+            description: Groups all species that belong to the same evolution chain.
+          - name: color_id
+            description: Pokédex color category used for the color-based Pokédex search.
+          - name: shape_id
+            description: Pokédex body shape category.
+          - name: habitat_id
+            description: Habitat category; blank for many modern-generation species.
+          - name: gender_rate
+            description: Chance of being female, in eighths; -1 means genderless.
+          - name: capture_rate
+            description: Base catch rate used in the capture formula.
+          - name: base_happiness
+            description: Starting friendship value when caught.
+          - name: is_baby
+            description: Whether this is a baby Pokémon (e.g. Pichu).
+          - name: hatch_counter
+            description: Number of egg cycles needed to hatch an egg of this species.
+          - name: has_gender_differences
+            description: Whether males and females of this species look visually different.
+          - name: growth_rate_id
+            description: Leveling/experience curve category.
+          - name: forms_switchable
+            description: Whether the Pokémon can freely switch between its forms outside of battle.
+          - name: is_legendary
+            description: Whether this is a legendary species.
+          - name: is_mythical
+            description: Whether this is a mythical species.
+          - name: order
+            description: Ordering used for sorting species in the national Pokédex.
+          - name: conquest_order
+            description: Ordering used in Pokémon Conquest; blank for species not in that game.

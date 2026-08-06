@@ -1,0 +1,21 @@
+version: 2
+
+sources:
+  - name: pokeapi
+    description: Raw PokeAPI CSV exports, loaded into DuckDB by scripts/load_raw_data.py.
+    schema: main
+    tables:
+      - name: raw_abilities
+        description: Lookup of Pokémon abilities, as exported by PokeAPI.
+        columns:
+          - name: id
+            description: Primary key; referenced elsewhere as ability_id.
+            data_tests:
+              - unique
+              - not_null
+          - name: identifier
+            description: Name slug of the ability (e.g. 'overgrow').
+          - name: generation_id
+            description: Generation this ability was introduced in.
+          - name: is_main_series
+            description: Whether the ability appears in the main series games, as opposed to spin-offs.

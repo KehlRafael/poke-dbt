@@ -1,0 +1,38 @@
+version: 2
+
+sources:
+  - name: pokeapi
+    description: Raw PokeAPI CSV exports, loaded into DuckDB by scripts/load_raw_data.py.
+    schema: main
+    tables:
+      - name: raw_pokemon_forms
+        description: One row per cosmetic/battle form, as exported by PokeAPI.
+        columns:
+          - name: id
+            description: Primary key; referenced elsewhere as form_id.
+            data_tests:
+              - unique
+              - not_null
+          - name: identifier
+            description: Full name of this form (e.g. 'venusaur-mega'), usually matching raw_pokemon.identifier.
+          - name: form_identifier
+            description: Short form/category suffix (e.g. 'mega', 'a', 'eternamax'); blank for a Pokémon's plain default form.
+          - name: pokemon_id
+            description: Foreign key to raw_pokemon.id. Multiple cosmetic-only forms (e.g. Unown, Vivillon) can share one pokemon_id.
+            data_tests:
+              - not_null
+              - relationships:
+                  to: source('pokeapi', 'raw_pokemon')
+                  field: id
+          - name: introduced_in_version_group_id
+            description: Version group this form was introduced in.
+          - name: is_default
+            description: Whether this is the default form row for its pokemon_id.
+          - name: is_battle_only
+            description: Whether the form only exists in battle and can't be kept outside of it.
+          - name: is_mega
+            description: Whether this is a Mega Evolution form.
+          - name: form_order
+            description: Ordering of forms within a species, for display purposes.
+          - name: order
+            description: Global ordering used for sorting forms across all Pokémon.

@@ -1,0 +1,34 @@
+version: 2
+
+sources:
+  - name: pokeapi
+    description: Raw PokeAPI CSV exports, loaded into DuckDB by scripts/load_raw_data.py.
+    schema: main
+    tables:
+      - name: raw_pokemon
+        description: One row per Pokémon form/variant, as exported by PokeAPI.
+        columns:
+          - name: id
+            description: Primary key; referenced elsewhere as pokemon_id.
+            data_tests:
+              - unique
+              - not_null
+          - name: identifier
+            description: Name slug for this Pokémon form/variant (e.g. 'bulbasaur', 'venusaur-mega').
+          - name: species_id
+            description: Foreign key to raw_pokemon_species.id.
+            data_tests:
+              - not_null
+              - relationships:
+                  to: source('pokeapi', 'raw_pokemon_species')
+                  field: id
+          - name: height
+            description: Height, in decimetres.
+          - name: weight
+            description: Weight, in hectograms.
+          - name: base_experience
+            description: Base experience yield when this Pokémon is defeated.
+          - name: order
+            description: Ordering used for sorting Pokémon in a Pokédex listing.
+          - name: is_default
+            description: Whether this is the default form for its species.

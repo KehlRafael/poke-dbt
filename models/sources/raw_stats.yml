@@ -1,0 +1,23 @@
+version: 2
+
+sources:
+  - name: pokeapi
+    description: Raw PokeAPI CSV exports, loaded into DuckDB by scripts/load_raw_data.py.
+    schema: main
+    tables:
+      - name: raw_stats
+        description: Lookup of base-stat names, as exported by PokeAPI.
+        columns:
+          - name: id
+            description: Primary key; referenced elsewhere as stat_id.
+            data_tests:
+              - unique
+              - not_null
+          - name: damage_class_id
+            description: Foreign key to the damage class (physical/special) this stat applies to; blank for non-damage stats.
+          - name: identifier
+            description: Name slug of the stat (e.g. 'hp', 'attack', 'special-attack').
+          - name: is_battle_only
+            description: Whether the stat only applies in battle (e.g. accuracy, evasion) rather than being one of the six base stats.
+          - name: game_index
+            description: Index used internally by the games; varies by generation.

@@ -1,0 +1,28 @@
+version: 2
+
+sources:
+  - name: pokeapi
+    description: Raw PokeAPI CSV exports, loaded into DuckDB by scripts/load_raw_data.py.
+    schema: main
+    tables:
+      - name: raw_pokemon_stats
+        description: Long-format base stats, one row per (pokemon, stat), as exported by PokeAPI.
+        columns:
+          - name: pokemon_id
+            description: Foreign key to raw_pokemon.id.
+            data_tests:
+              - not_null
+              - relationships:
+                  to: source('pokeapi', 'raw_pokemon')
+                  field: id
+          - name: stat_id
+            description: Foreign key to raw_stats.id.
+            data_tests:
+              - not_null
+              - relationships:
+                  to: source('pokeapi', 'raw_stats')
+                  field: id
+          - name: base_stat
+            description: Base value for this stat.
+          - name: effort
+            description: Effort Value (EV) yield awarded for defeating this Pokémon.

@@ -1,0 +1,28 @@
+version: 2
+
+sources:
+  - name: pokeapi
+    description: Raw PokeAPI CSV exports, loaded into DuckDB by scripts/load_raw_data.py.
+    schema: main
+    tables:
+      - name: raw_pokemon_abilities
+        description: Many-to-many bridge between Pokémon and abilities, as exported by PokeAPI.
+        columns:
+          - name: pokemon_id
+            description: Foreign key to raw_pokemon.id.
+            data_tests:
+              - not_null
+              - relationships:
+                  to: source('pokeapi', 'raw_pokemon')
+                  field: id
+          - name: ability_id
+            description: Foreign key to raw_abilities.id.
+            data_tests:
+              - not_null
+              - relationships:
+                  to: source('pokeapi', 'raw_abilities')
+                  field: id
+          - name: is_hidden
+            description: Whether this is a hidden ability.
+          - name: slot
+            description: Ability slot - 1 and 2 are normal abilities, 3 is the hidden ability.

@@ -1,0 +1,21 @@
+version: 2
+
+sources:
+  - name: pokeapi
+    description: Raw PokeAPI CSV exports, loaded into DuckDB by scripts/load_raw_data.py.
+    schema: main
+    tables:
+      - name: raw_types
+        description: Lookup of Pokémon types, as exported by PokeAPI.
+        columns:
+          - name: id
+            description: Primary key; referenced elsewhere as type_id.
+            data_tests:
+              - unique
+              - not_null
+          - name: identifier
+            description: Name slug of the type (e.g. 'fire', 'water').
+          - name: generation_id
+            description: Generation this type was introduced in.
+          - name: damage_class_id
+            description: Foreign key to the type's default damage class; blank for pseudo-types like 'shadow'/'unknown'.
