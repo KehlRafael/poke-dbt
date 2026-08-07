@@ -1,0 +1,9 @@
+version: 2
+
+data_tests:
+  - name: reconciliation_pokemon_missing_ev_yield
+    description: >
+      Reconciliation test between dim_pokemon and dim_effort_value: every
+      Pokémon form must yield an EV for at least one stat when defeated.
+      Fails if it finds any pokemon_id present in dim_pokemon but absent
+      from dim_effort_value.
