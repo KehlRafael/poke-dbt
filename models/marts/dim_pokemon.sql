@@ -10,25 +10,42 @@ stats_wide as (
     select * from {{ ref('int_pokemon_stats_pivoted') }}
 ),
 
-types_agg as (
-    select
-        pt.pokemon_id,
-        max(case when pt.type_slot = 1 then t.type_name end) as primary_type,
-        max(case when pt.type_slot = 2 then t.type_name end) as secondary_type
+types_joined as (
+    select pt.pokemon_id, pt.type_slot, t.type_name
     from {{ ref('stg_pokemon_types') }} pt
     inner join {{ ref('stg_types') }} t on pt.type_id = t.type_id
-    group by pt.pokemon_id
+),
+
+types_agg as (
+    select
+        pokemon_id,
+        {{ pivot_by_slot(
+            agg='max',
+            slot_column='type_slot',
+            value_column='type_name',
+            slot_labels={1: 'primary_type', 2: 'secondary_type'}
+        ) }}
+    from types_joined
+    group by pokemon_id
+),
+
+abilities_joined as (
+    select pa.pokemon_id, pa.ability_slot, a.ability_name
+    from {{ ref('stg_pokemon_abilities') }} pa
+    inner join {{ ref('stg_abilities') }} a on pa.ability_id = a.ability_id
 ),
 
 abilities_agg as (
     select
-        pa.pokemon_id,
-        max(case when pa.ability_slot = 1 then a.ability_name end) as ability_1,
-        max(case when pa.ability_slot = 2 then a.ability_name end) as ability_2,
-        max(case when pa.ability_slot = 3 then a.ability_name end) as hidden_ability
-    from {{ ref('stg_pokemon_abilities') }} pa
-    inner join {{ ref('stg_abilities') }} a on pa.ability_id = a.ability_id
-    group by pa.pokemon_id
+        pokemon_id,
+        {{ pivot_by_slot(
+            agg='max',
+            slot_column='ability_slot',
+            value_column='ability_name',
+            slot_labels={1: 'ability_1', 2: 'ability_2', 3: 'hidden_ability'}
+        ) }}
+    from abilities_joined
+    group by pokemon_id
 ),
 
 stat_totals as (
